@@ -2,17 +2,16 @@ import streamlit as st
 from diffusers import StableDiffusionPipeline
 import torch
 
-st.title("🎨 AI Image Generator - NeuraVision")
+st.title("🧠 NeuraVision - AI Image Generator")
 
-prompt = st.text_input("Enter your prompt:", "A futuristic cyberpunk city at night")
+prompt = st.text_input("Enter your prompt:", "A cyberpunk futuristic city")
 
 if st.button("Generate"):
-    with st.spinner("Generating image..."):
+    with st.spinner("Loading model..."):
         pipe = StableDiffusionPipeline.from_pretrained(
-            "Wiuhh/Neura", 
-            torch_dtype=torch.float16,
-            revision="fp16"
-        ).to("cuda" if torch.cuda.is_available() else "cpu")
-        
+            "Wiuhh/Neura",              # ✅ Correct model name
+            torch_dtype=torch.float32   # ❗ use float32 instead of float16 on CPU
+        ).to("cpu")                      # ❗ Always use CPU on Streamlit Cloud
+
         image = pipe(prompt).images[0]
-        st.image(image, caption="Generated Image", use_column_width=True)
+        st.image(image, caption="Generated Image")
