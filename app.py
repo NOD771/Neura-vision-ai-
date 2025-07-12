@@ -1,42 +1,18 @@
 import streamlit as st
-import torch
 from diffusers import StableDiffusionPipeline
-import os
-import gdown
+import torch
 
-# Streamlit Page Settings
-st.set_page_config(page_title="Neura AI Image Generator", page_icon="🎨", layout="centered")
-st.markdown("## 🎨 Neura AI Image Generator")
+st.title("🎨 AI Image Generator - NeuraVision")
 
-# Prompt input
-prompt = st.text_input("Enter your image prompt")
-generate_button = st.button("Generate")
+prompt = st.text_input("Enter your prompt:", "A futuristic cyberpunk city at night")
 
-# Google Drive file ID (replace with your actual model file ID)
-FILE_ID = "1ErCyGDdmZl8056BiBsfWbDj02zA_sgC-"  # 🔁 Replace this if needed
-MODEL_PATH = "model.safetensors"
-
-# Model Loader
-@st.cache_resource(show_spinner="🔄 Loading model, please wait...")
-def load_model():
-    # Download model from Google Drive if not already present
-    if not os.path.exists(MODEL_PATH):
-        with st.spinner("📥 Downloading model from Google Drive..."):
-            gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", MODEL_PATH, quiet=False)
-    
-    # Load model
-    pipe = StableDiffusionPipeline.from_single_file(
-        MODEL_PATH,
-        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
-    )
-    pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
-    return pipe
-
-# Generate Button Click
-if generate_button and prompt:
-    st.write(f"🎯 Prompt: `{prompt}`")
-    pipe = load_model()
-
-    with st.spinner("🛠️ Generating image..."):
+if st.button("Generate"):
+    with st.spinner("Generating image..."):
+        pipe = StableDiffusionPipeline.from_pretrained(
+            "Wiuhh/Neura", 
+            torch_dtype=torch.float16,
+            revision="fp16"
+        ).to("cuda" if torch.cuda.is_available() else "cpu")
+        
         image = pipe(prompt).images[0]
-        st.image(image, caption="🖼️ Generated Image", use_column_width=True)
+        st.image(image, caption="Generated Image", use_column_width=True)
