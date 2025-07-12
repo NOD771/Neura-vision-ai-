@@ -1,6 +1,5 @@
 streamlit
-torch
 diffusers
 transformers
+torch
 safetensors
-gdown
